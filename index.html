@@ -757,7 +757,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
         <div class="sc-label">🔍 País pequeno</div>
         <canvas id="scFlagCanvas" width="60" height="40"></canvas>
         <div class="sc-name" id="scName">—</div>
-        <div class="sc-hint">👆 Clica aqui!</div>
+        <div class="sc-hint">🔍 Toca para aproximar</div>
       </div>
     </div>
 
@@ -767,7 +767,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
         <div class="sc-label">🏝️ Ilha</div>
         <canvas id="cpFlagCanvas" width="60" height="40"></canvas>
         <div class="sc-name" id="cpName">Chipre</div>
-        <div class="sc-hint">👆 Clica aqui!</div>
+        <div class="sc-hint">🔍 Toca para aproximar</div>
       </div>
     </div>
 
@@ -1799,10 +1799,6 @@ function updateMaltaPin(){
     if(lbl) lbl.innerHTML='✅ Malta<br><span style="font-size:9px;color:#00e676">'+d.capital+' · '+d.desde+'</span>';
     pin.style.borderColor='rgba(0,230,118,0.5)';
     if(dot){dot.style.background='#00e676';dot.style.boxShadow='0 0 8px #00e676';}
-  } else if(isTarget){
-    if(lbl) lbl.innerHTML='🇲🇹 Malta<br><span style="font-size:9px;color:#fff">Clica aqui! 👆</span>';
-    pin.style.animation='pinHighlight .6s ease-in-out infinite alternate';
-    if(dot){dot.style.animation='pinPulse .4s ease-in-out infinite alternate';}
   } else {
     if(lbl) lbl.innerHTML='🇲🇹 Malta';
     pin.style.animation='';
@@ -2622,7 +2618,7 @@ function updateSmallCountryPanel(){
   const cpPanel = document.getElementById('cyprusPanel');
   if(!panel || !cpPanel) return;
 
-  if(!current || answered.has(current.iso) || locked){
+  if(!current || answered.has(current.iso) || locked || diff===3){
     panel.classList.remove('visible');
     cpPanel.classList.remove('visible');
     _scCurrentIso = null;
@@ -2679,10 +2675,13 @@ function updateSmallCountryPanel(){
 }
 
 function smallCountryClick(){
-  if(_scCurrentIso) tapToConfirm(_scCurrentIso);
+  // A bandeira do painel NÃO responde: só aproxima o mapa para ajudar a encontrar o país.
+  if(!_scCurrentIso || !current || locked || diff===3) return;
+  if(ISLAND_ZOOM[_scCurrentIso]) zoomToIsland(_scCurrentIso); else zoomToSmallCountry(_scCurrentIso);
+  vbSay('🔍 Procura <b style="color:#FFD600">'+current.name+'</b> no mapa<br><span style="color:#adf;font-size:0.85em">e toca no próprio país 👆</span>');
 }
 function cyprusPanelClick(){
-  if(_scCurrentIso === CYPRUS_ISO) tapToConfirm(CYPRUS_ISO);
+  if(_scCurrentIso === CYPRUS_ISO) smallCountryClick();
 }
 
 // Zoom mais próximo para países pequenos
