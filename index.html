@@ -685,6 +685,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     </div>
     <div id="hudR">
       <span id="progTxt">0/27</span>
+      <button class="hbtn" id="btnFS" title="Ecrã inteiro" aria-label="Ecrã inteiro">⛶</button>
       <button class="hbtn" id="btnSnd">🔊</button>
       <button class="hbtn" id="btnHome">🏠</button>
     </div>
@@ -2957,6 +2958,20 @@ function syncVbStart(){
   if(sm&&vb) vb.classList.toggle('vb-start', sm.style.display!=='none');
 }
 syncVbStart(); setInterval(syncVbStart,400);
+
+// ── ECRÃ INTEIRO ──
+(function(){
+  const b=document.getElementById('btnFS'),d=document.documentElement;
+  const el=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
+  if(!(d.requestFullscreen||d.webkitRequestFullscreen)){b.style.display='none';return;}
+  b.addEventListener('click',()=>{
+    const f=el()?(document.exitFullscreen||document.webkitExitFullscreen):(d.requestFullscreen||d.webkitRequestFullscreen);
+    const r=f.call(el()?document:d);if(r&&r.catch)r.catch(()=>{});
+  });
+  function upd(){const on=!!el();b.textContent=on?'✕':'⛶';b.title=on?'Sair do ecrã inteiro':'Ecrã inteiro';b.setAttribute('aria-label',b.title);}
+  document.addEventListener('fullscreenchange',upd);
+  document.addEventListener('webkitfullscreenchange',upd);
+})();
 
 </script>
 <div id="prof-tag">© Prof.ª Vanda Várzea</div>
